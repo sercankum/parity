@@ -47,6 +47,9 @@ jobs:
               pyinstaller --noconfirm --onefile --name Parity main.py
               tar -czf "${{ matrix.artifact }}" -C dist Parity ;;
           esac
+      - name: Install desktop graphics libraries (Linux desktops already have these)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libegl1 libxkbcommon0 libfontconfig1
       - name: Launch the built app (demo scan, then quit)
         shell: bash
         env:

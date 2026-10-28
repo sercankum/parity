@@ -14,7 +14,7 @@ Get the file for your system from the [latest release](../../releases/latest):
 |---|---|---|
 | Windows 10/11 | `Parity-windows-x64.zip` | Unzip it and run `Parity.exe`. If SmartScreen warns you, choose **More info → Run anyway**. |
 | macOS (Apple Silicon) | `Parity-macos-arm64.zip` | Unzip it, move `Parity.app` to Applications, and open it. The first time, go to **System Settings → Privacy & Security → Open Anyway**. |
-| Linux (x64) | `Parity-linux-x64.tar.gz` | Run `tar -xzf Parity-linux-x64.tar.gz && ./Parity` |
+| Linux (x64) | `Parity-linux-x64.tar.gz` | Run `tar -xzf Parity-linux-x64.tar.gz && ./Parity`. Any desktop install already has the libraries it needs. On a minimal system, install `libegl1` and `libxkbcommon0` first. |
 
 The builds aren't code-signed yet, which is why Windows and macOS warn the first time you open them.
 
