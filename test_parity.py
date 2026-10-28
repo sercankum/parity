@@ -1,5 +1,6 @@
 """Quick self-check: python test_parity.py (runs anywhere, no Windows needed)."""
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -104,7 +105,14 @@ def test_real_scan():
     r = scan(print)
     system = r.section("System")
     assert system and system.items, r.hardware
-    print(f"  {r.platform}: {r.os_name} · {len(r.apps)} programs · warnings: {r.warnings}")
+    auto = sum(1 for a in r.apps if a.pkg_id)
+    summary = (f"{r.os_name} · {len(r.apps)} programs ({auto} restorable) · "
+               f"hardware: {', '.join(f'{h.title} {len(h.items)}' for h in r.hardware)}")
+    print(f"  {r.platform}: {summary} · warnings: {r.warnings}")
+    if os.environ.get("GITHUB_ACTIONS"):      # show up as annotations on the run page
+        print(f"::notice title=Scan on {r.platform}::{summary}")
+        for w in r.warnings:
+            print(f"::warning title=Scan on {r.platform}::{w}")
     with tempfile.TemporaryDirectory() as d:
         assert len(export_kit(r, Path(d))) >= 4
 
