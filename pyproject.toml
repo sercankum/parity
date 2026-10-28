@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "parity"
+version = "1.0.0"
+description = "Snapshot your installed software and hardware before reinstalling your OS, then restore it in one go."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["PySide6>=6.7"]
+classifiers = [
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Environment :: X11 Applications :: Qt",
+]
+
+[project.urls]
+Homepage = "https://github.com/sercankum/parity"
+
+# gui-scripts: no console window pops up on Windows
+[project.gui-scripts]
+parity = "parity.__main__:main"
+
+[tool.setuptools]
+packages = ["parity"]

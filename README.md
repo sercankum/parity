@@ -55,17 +55,27 @@ Parity is built to work with a keyboard and a screen reader (Narrator, NVDA, Voi
 
 The HTML report uses real tables and headings and respects dark mode. If something gets in your way, please [open an issue](../../issues).
 
-## Running from source
+## Install with pip
+
+If you already have Python 3.10 or newer, pip installs Parity and everything it needs, including PySide6:
 
 ```sh
-pip install -r requirements.txt
-python main.py          # or: python main.py --demo   (sample data, any OS)
+pip install git+https://github.com/sercankum/parity
+parity                  # or: python -m parity
+parity --demo           # try it with sample data
+```
+
+## Development
+
+```sh
+git clone https://github.com/sercankum/parity && cd parity
+pip install -e .        # installs PySide6 too
 python test_parity.py   # tests, including a real scan of this machine
 ```
 
 To build the standalone app yourself: `pip install pyinstaller`, then `pyinstaller --onefile --windowed --name Parity main.py`.
 
-Every push builds and tests on Windows, macOS and Linux through GitHub Actions. Pushing a `v*` tag publishes a release.
+Every push builds, tests and launches the app on Windows, macOS and Linux through GitHub Actions. Pushing a `v*` tag publishes a release.
 
 ## License
 
