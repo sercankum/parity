@@ -7,6 +7,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8")   # Windows consoles default to a legacy code page
+
 from parity.demo import demo_result
 from parity.exporter import _ps, disk_summary, export_kit
 from parity.linux import storage

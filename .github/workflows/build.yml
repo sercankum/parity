@@ -47,6 +47,17 @@ jobs:
               pyinstaller --noconfirm --onefile --name Parity main.py
               tar -czf "${{ matrix.artifact }}" -C dist Parity ;;
           esac
+      - name: Launch the built app (demo scan, then quit)
+        shell: bash
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          case "$RUNNER_OS" in
+            Windows) ./dist/Parity.exe --smoke ;;
+            macOS)   ./dist/Parity.app/Contents/MacOS/Parity --smoke ;;
+            Linux)   ./dist/Parity --smoke ;;
+          esac
+          echo "::notice title=Built app on $RUNNER_OS::Opened, ran a demo scan and closed cleanly"
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}

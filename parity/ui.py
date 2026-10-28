@@ -389,9 +389,13 @@ class MainWindow(QMainWindow):
                 subprocess.Popen(["open" if sys.platform == "darwin" else "xdg-open", str(folder)])
 
 
-def run(demo: bool = False) -> int:
+def run(demo: bool = False, smoke: bool = False) -> int:
     app = QApplication.instance() or QApplication(sys.argv)
     app.setApplicationName("Parity")
-    win = MainWindow(demo=demo)
+    win = MainWindow(demo=demo or smoke)
     win.show()
+    if smoke:     # CI check that the packaged app starts: demo scan, then exit 0 only if it loaded
+        from PySide6.QtCore import QTimer
+        win.start_scan()
+        QTimer.singleShot(5000, lambda: app.exit(0 if win.result and win.result.apps else 1))
     return app.exec()
