@@ -23,7 +23,7 @@ def _app_info(app: Path) -> tuple[str, str, str]:
     try:
         with open(app / "Contents" / "Info.plist", "rb") as f:
             p = plistlib.load(f)
-    except (OSError, plistlib.InvalidFileException, ValueError):
+    except Exception:     # some apps ship broken plists (expat errors aren't InvalidFileException); use the folder name
         p = {}
     name = p.get("CFBundleDisplayName") or p.get("CFBundleName") or app.stem
     return str(name), str(p.get("CFBundleShortVersionString") or p.get("CFBundleVersion") or ""), str(p.get("CFBundleIdentifier") or "")

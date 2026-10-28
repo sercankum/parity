@@ -12,6 +12,7 @@ sys.stdout.reconfigure(encoding="utf-8")   # Windows consoles default to a legac
 from parity.demo import demo_result
 from parity.exporter import _ps, disk_summary, export_kit
 from parity.linux import storage
+from parity.macos import _app_info
 from parity.models import App
 from parity.scanner import categorize, merge_winget, parse_winget_list, scan
 
@@ -102,6 +103,14 @@ def test_restore_sh():
             subprocess.run(["bash", "-n", str(Path(d) / "restore.sh")], check=True)
 
 
+def test_broken_plist():
+    with tempfile.TemporaryDirectory() as d:
+        app = Path(d) / "Broken Thing.app"
+        (app / "Contents").mkdir(parents=True)
+        (app / "Contents" / "Info.plist").write_bytes(b'<?xml version="1.0"?>\n<plist><dict>\n<key>A</key>\x01<string>x\n')
+        assert _app_info(app) == ("Broken Thing", "", "")
+
+
 def test_real_scan():
     """Scans the machine running the tests. In CI this runs on real Windows, macOS and Linux."""
     r = scan(print)
@@ -124,5 +133,6 @@ if __name__ == "__main__":
     test_export()
     test_linux_storage()
     test_restore_sh()
+    test_broken_plist()
     test_real_scan()
     print("all good")
