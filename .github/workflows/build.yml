@@ -1,0 +1,66 @@
+# Tests on real Windows, macOS and Linux, then builds a standalone app for each.
+# Push a tag like v1.0.0 to publish a GitHub Release with all three downloads.
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to publish releases
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: Parity-windows-x64.zip
+          - os: macos-latest
+            artifact: Parity-macos-arm64.zip
+          - os: ubuntu-22.04          # older glibc, so the binary runs on most distros
+            artifact: Parity-linux-x64.tar.gz
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - name: Test (includes a real scan of this runner)
+        run: python test_parity.py
+      - name: Build
+        shell: bash
+        run: |
+          case "$RUNNER_OS" in
+            Windows)
+              pyinstaller --noconfirm --onefile --windowed --name Parity main.py
+              7z a "${{ matrix.artifact }}" ./dist/Parity.exe ;;
+            macOS)
+              pyinstaller --noconfirm --windowed --name Parity main.py
+              ditto -c -k --keepParent dist/Parity.app "${{ matrix.artifact }}" ;;
+            Linux)
+              pyinstaller --noconfirm --onefile --name Parity main.py
+              tar -czf "${{ matrix.artifact }}" -C dist Parity ;;
+          esac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: Parity-*
+          generate_release_notes: true

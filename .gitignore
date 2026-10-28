@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+.venv/
+# Restore kits contain your hostname, MAC addresses and installed software
+Parity */
+.DS_Store
